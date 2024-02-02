@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<!-- saved from url=(0137)file:///Users/davidlaning/Desktop/Y00101-Applications/html_app_container.Y30414.1700%20copy/html_apps/BEV-RangeEstimator-Y30411-1150.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+    <title>BEV Range Calculator</title>
+    <!--Google Font-->
+    <link rel="preconnect" href="https://fonts.gstatic.com/">
+    <link href="./BEV Range Calculator_files/css2" rel="stylesheet">
+    <!--Stylesheet-->
+    <style media="screen">
+    	*,
+*:before,
+*:after{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+body{
+    height: 400vh;
+    background: #046db9;
+}
+.container{
+    background-color: #ffffff;
+    padding: 30px 30px;   
+    width: 800px;
+    position: absolute;
+    transform: translate(-50%,-90%);
+    top: 95%;
+    left: 50%;
+    border-radius: 5px;
+    font-family: 'Poppins',sans-serif;
+    box-shadow: 25px 25px 30px rgba(0,0,0,0.15);
+}
+.container h1{
+	background: #024b94;
+	color: white;
+	text-align: center;
+	font-size: 23px;
+	letter-spacing: 1px;
+	margin-top: -30px;
+	margin-left: -30px;
+	margin-right: -30px;
+	margin-bottom: 40px;
+}
+.row{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+.row span{
+    font-weight: 500;
+}
+input[type="range"]{
+    width: 70%;
+    height: 3.5px;
+    -webkit-appearance: none;
+    appearance: none;
+    background-color: #dcdcdc;
+    border-radius: 3px;
+    outline: none;
+}
+input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance: none;
+    appearance: none;
+    height: 15px;
+    width: 15px;
+    background-color: #1c1c1c;
+    border-radius: 50%;
+    cursor: pointer;
+}
+#result{
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-align: left;
+    color: #00000;
+}
+#result1{
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-align: left;
+    color: #00000;
+}
+      #result2{
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-align: left;
+    color: #008000;
+}
+      #result3{
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-align: left;
+    color: #008000;
+}
+      #result4{
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-align: left;
+    color: #008000;
+}
+#category{
+    font-size: 24px;
+    text-align: left;
+    letter-spacing: 1px;
+}
+.display{
+box-shadow: 0 0 20px rgba(0,139,253,0.25);
+margin-bottom: 60px;
+}
+    </style>
+</head>
+<body onload="calculate()">
+    <div class="container">
+			<h1>BEV Range Calculator</h1>
+			<div class="display">
+				        <p>------------- Battery Range (English Units) ---------------------------</p>        
+                <p id="result">58.41 mi_in_1hr</p>
+                <p id="result3" style="color: rgb(0, 128, 0);">71.64 mile_range_of_battery</p>
+                <p>------------- Battery Energy Used in 1 Hour ---------------------------</p>
+                <p id="result4" style="color: rgb(0, 128, 0);">70.94 kWhr_per_hr</p>
+                <p>------------- Battery Range (Metric Units) ---------------------------</p>
+                <p id="result1">94.00 km_in_1hr</p>
+        				<p id="result2" style="color: rgb(0, 128, 0);">115.29 km_range_of_battery</p>
+                <p>-----------------------------------------------------------------</p>
+                <p id="category">Excellent Range</p>
+			</div>
+         
+        <div class="row">
+            <input type="range" min="1" max="120" value="100" id="max_speed" oninput="calculate()">
+            <span id="max_speed-val">94 max_speed</span>
+        </div>
+              
+        <div class="row">
+            <input type="range" min="0" max="60" value="0" id="stops_per_hour" oninput="calculate()">
+            <span id="stops_per_hour-val">0 stops_per_hour</span>
+        </div>
+      
+        <div class="row">
+            <input type="range" min="0" max="300" value="0" id="stop_time_secs" oninput="calculate()">
+            <span id="stop_time_secs-val">34 stop_time_secs</span>
+        </div>
+      
+        <div class="row">
+            <input type="range" min="0" max="1000" value="0" id="total_climb_m" oninput="calculate()">
+            <span id="total_climb_m-val">0 total_climb_m</span>
+        </div>
+      
+        <div class="row">
+            <input type="range" min="0" max="1000" value="0" id="total_descent_m" oninput="calculate()">
+            <span id="total_descent_m-val">0 total_descent_m</span>
+        </div>
+      
+        <div class="row">
+            <input type="range" min="0" max="100" value="50" id="regen_efficiency" oninput="calculate()">
+            <span id="regen_efficiency-val4">46 regen_efficiency</span>
+        </div>
+              
+        <div class="row">
+            <input type="range" min="0" max="500" value="100" id="kwhr_battery_size" oninput="calculate()">
+            <span id="kwhr_battery_size-val5">87 kwhr_battery_size</span>
+        </div>
+      
+
+    </div>
+    <!--Script-->
+    <script type="text/javascript">
+function calculate(){
+    var km_in_1hr;
+    var kWhr_per_hr;
+    var km_range_of_battery;
+    var category;
+    var secs_to_full_stop;
+    var secs_to_full_speed;
+    var result = document.getElementById("result");
+    var result1 = document.getElementById("result1");
+    var result2 = document.getElementById("result2");
+    var result3 = document.getElementById("result3");
+    var result4 = document.getElementById("result4");
+  
+      var total_descent_m = parseInt(document.getElementById("total_descent_m").value);
+    document.getElementById("total_descent_m-val").textContent = total_descent_m + " total_descent_m";
+  
+      var max_speed = parseInt(document.getElementById("max_speed").value);
+    document.getElementById("max_speed-val").textContent = max_speed + " max_speed";
+ 
+      var stops_per_hour = parseInt(document.getElementById("stops_per_hour").value);
+    document.getElementById("stops_per_hour-val").textContent = stops_per_hour + " stops_per_hour";
+  
+     var stop_time_secs = parseInt(document.getElementById("stop_time_secs").value);
+    document.getElementById("stop_time_secs-val").textContent = stop_time_secs + " stop_time_secs";
+  
+      var total_climb_m = parseInt(document.getElementById("total_climb_m").value);
+    document.getElementById("total_climb_m-val").textContent = total_climb_m + " total_climb_m";
+  
+      var regen_efficiency = parseInt(document.getElementById("regen_efficiency").value);
+    document.getElementById("regen_efficiency-val4").textContent = regen_efficiency + " regen_efficiency";
+
+      var kwhr_battery_size = parseInt(document.getElementById("kwhr_battery_size").value);
+    document.getElementById("kwhr_battery_size-val5").textContent = kwhr_battery_size + " kwhr_battery_size"; 
+  
+    category = "Excellent Range";
+    secs_to_full_stop = 15;
+    secs_to_full_speed = 15;
+    km_in_1hr = ((((1-(stops_per_hour*((secs_to_full_stop+stop_time_secs+secs_to_full_speed)/60)/60))) * max_speed) + ((stops_per_hour*((secs_to_full_stop+secs_to_full_speed)/60)/60)*(max_speed/2))) + (stop_time_secs*0);
+    kWhr_per_hr = 0.0364*(max_speed*max_speed*max_speed)/1000*((1-(stops_per_hour*((secs_to_full_stop+stop_time_secs+secs_to_full_speed)/60)/60))) + 433*(max_speed)/1000*((1-(stops_per_hour*((secs_to_full_stop+stop_time_secs+secs_to_full_speed)/60)/60))) + (stops_per_hour*(0.5*919*max_speed*max_speed)/3600000) - ((regen_efficiency/100)*stops_per_hour*(0.5*919*max_speed*max_speed)/3600000) + (919*9.6*(total_climb_m)/3600000) - ((regen_efficiency/100)*919*9.6*(total_descent_m)/3600000) ;
+    km_range_of_battery = km_in_1hr * (kwhr_battery_size/kWhr_per_hr);
+    result.textContent = (km_in_1hr/1.609344).toFixed(2) + " mi_in_1hr";
+    result1.textContent = km_in_1hr.toFixed(2) + " km_in_1hr";
+    result2.textContent = km_range_of_battery.toFixed(2) + " km_range_of_battery";
+    result3.textContent = (km_range_of_battery/1.609344).toFixed(2) + " mile_range_of_battery";
+    result4.textContent = kWhr_per_hr.toFixed(2) + " kWhr_per_hr";
+
+    if(km_range_of_battery < 0){
+        category = "Range Model Beyond Limits";
+        result4.style.color = "#ff0000";
+        result2.style.color = "#ff0000";
+        result3.style.color = "#ff0000";
+    }
+    else if(km_range_of_battery >= 0 && km_range_of_battery <= 25 ){
+        category = "Recharge Now";
+        result4.style.color = "#ff5f1f";
+        result2.style.color = "#ff5f1f";
+        result3.style.color = "#ff5f1f";
+    }
+    else if(km_range_of_battery >= 25 && km_range_of_battery <= 50 ){
+        category = "Short Range";
+        result4.style.color = "#ff5f1f";
+        result2.style.color = "#ff5f1f";
+        result3.style.color = "#ff5f1f";
+    }
+    else if( km_range_of_battery >= 50 && km_range_of_battery <= 100 ){
+        category = "Moderate Range";
+        result4.style.color = "#008000";
+        result2.style.color = "#008000";
+        result3.style.color = "#008000";
+    }
+    else{
+        category = "Excellent Range";
+        result4.style.color = "#008000";
+        result2.style.color = "#008000";
+        result3.style.color = "#008000";
+    }
+    document.getElementById("category").textContent = category;
+}
+    </script>
+
+
+</body></html>
