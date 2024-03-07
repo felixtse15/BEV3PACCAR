@@ -1,15 +1,16 @@
 clear;
 
-set_40_mph = readmatrix('2023-05-15_17-35-19_B2051_Transient_Fast_AllCAN_UW');
-set_40_mph_table = readtable('2023-05-15_17-35-19_B2051_Transient_Fast_AllCAN_UW');
+drive_cycle = readmatrix('PACCARTruckDatav2');
+drive_cycle_table = readtable('PACCARTruckDatav2');
 
 
+% New coefficients
 p = 1.225;
-drag_coef = 0.8;
-FA = 8.052; 
-M_veh = 11000; 
+drag_coef = 0.5; 
+FA = 10.3905; % m^2
+M_veh = 36000; 
 M_veh_ton = M_veh / 1000; 
-RRC = 3.5;
+RRC = 5; % converted * 1000
 g = 9.8; 
 
 % Assumptions
@@ -17,55 +18,99 @@ g = 9.8;
 SPC = 50; % idle power consumption in kW 
 p_loss = 0.8; % energy loss from power at batt -> tract power
 
+data_size = size(drive_cycle);
 
-v = set_40_mph(:, 6) ./ 3.6; %kmph to m/s
-a = set_40_mph(:, 4); % already in m/s^2
+t = (1:1:data_size(1))';
+v = drive_cycle(:, 17) * .278;
+h = drive_cycle(:, 18);
 
-t = set_40_mph(:, 1);
+accel = zeros(size(v));
+dh = zeros(size(h));
 
-filler_term = ((-a .* v .* M_veh) / 1000) + 226; %filler for regenerative breaking 
+for i = 1:(data_size(1) - 1) 
+    accel(i + 1) = v(i + 1) - v(i);
+    dh(i + 1) = h(i + 1) - h(i);
+end
 
+brake_pos = drive_cycle(:, 6);
+
+
+ratio = dh./v;
+% ratio(isnan(ratio)) = 0; 
+% ratio(isinf(ratio)) = 0; 
+slope_grad_raw = asin(ratio);
+slope_grad_raw = sqrt(real(ratio).^2 + imag(ratio).^2); 
+slope_grad = real(asin(ratio));
+
+slope_grad_adj = zeros(size(dh));
+slope_grad_adj(dh < 0) = slope_grad_raw(dh < 0) .* -1; 
+slope_grad_adj(dh > 0) = slope_grad_raw(dh > 0);
+slope_grad_adj(isinf(slope_grad_adj)) = 0; 
+slope_grad_adj(isnan(slope_grad_adj)) = 0; 
+
+
+
+grav_term = (M_veh * g) .* slope_grad_adj .* v;
 aero_drag_term = (0.5 * p * FA * drag_coef) .* (v .^ 3); 
-accel_term = M_veh .* a .* v; 
+accel_term = M_veh .* accel .* v; 
 rr_term = (M_veh_ton * RRC * g) .* v; 
+brake_term = (M_veh .* v .* accel .* 0.85);
+
+motor_p = (drive_cycle(:, 7) .* drive_cycle(:, 9)) + (drive_cycle(:,8) .* drive_cycle(:, 10));
+motor_p_kw = motor_p / 1000; 
 
 
-p_inst = aero_drag_term + accel_term + rr_term; 
-p_inst_kw = p_inst ./ 1000;
-p_inst_kw = p_inst_kw + filler_term;
+p_calc = grav_term + aero_drag_term + accel_term + rr_term + brake_term;  
+p_calc_kw = p_calc / 1000; 
+p_calc_adj = p_calc_kw * 1.15; 
 
-batt_v = set_40_mph(:, 14);
-batt_A = set_40_mph(:, 15);
-
-p_batt = batt_v .* batt_A;
-p_batt_kw = batt_v .* batt_A ./ 1000;
-
-p_batt_adj = (p_batt_kw - SPC) .* p_loss; 
-
-p_perc_diff = (p_batt_adj - p_inst_kw) ./ p_batt_adj * 100; 
-
-p_diff = (p_batt_adj - p_inst_kw);
-
-p_consump_batt = trapz(t, p_batt_adj) * (set_40_mph(end, 1) / 3600)
-p_consump_calc = trapz(t, p_inst_kw) * (set_40_mph(end, 1) / 3600)
-
-p_consump_meas = (set_40_mph(1, 22) - set_40_mph(end, 22)) * -1000
-
-
-mean(abs(p_perc_diff));
-
-% figure(1);
-% plot(t, p_diff);
 % 
+% 
+figure(1);
+plot(t, p_calc_kw);
+title("Overall Instantaneous Power");
+xlabel("Time (s)");
+ylabel("Power (kW)");
+
+
 figure(2);
-plot(t, p_inst_kw);
+plot(t, motor_p_kw);
+title("Motor Power");
+xlabel("Time (s)");
+ylabel("Power (kW)");
+
+
 
 figure(3);
+plot(t, (p_calc_kw - motor_p_kw));
+title("Difference");
 
-plot(t, p_batt_adj);
 % 
 % figure(4);
+% plot(t, grav_term);
+% title("Gravity Term");
+% figure(5);
+% plot(t, grav_term_new);
+% title("New Gravity Term");
+
 % 
-% plot(t, filler_term);
+% figure(5);
+% plot(t, aero_drag_term);
+% title("Aero Drag Term");
+% 
+figure(6);
+plot(t, accel_term);
+title("Accel Term");
+% 
+% figure(7);
+% plot(t, rr_term);
+% title("Rolling Res Term");
+% 
+% figure(8);
+% plot(t, brake_pos);
+
+
+p_consump_prediction = trapz(t, p_calc_kw)
+p_consump_motor = trapz(t, motor_p_kw)
 
 
