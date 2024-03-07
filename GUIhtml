@@ -29,30 +29,26 @@
   
 <div class="sliders-container">
         <div class="slider">
-            <label for="max-speed">Max Speed</label>
-            <input type="range" id="max-speed" name="max-speed" min="0" max="100" value="50">
-            <output for="max-speed">50</output>
+            <label for="vehicle-weight">Vehicle Weight</label>
+            <input type="range" id="vehicle-weight" name="vehicle-weight" min="0" max="25000" value="25000">
+            <output for="vehicle-weight">25000 lbs</output>
         </div>
         <div class="slider">
-            <label for="stops-per-hour">Stops per Hour</label>
-            <input type="range" id="stops-per-hour" name="stops-per-hour" min="0" max="10" value="5">
-            <output for="stops-per-hour">5</output>
+            <label for="battery-capacity">Battery Capacity</label>
+            <input type="range" id="battery-capacity" name="battery-capacity" min="0" max="500" value="250">
+            <output for="battery-capacity">250 mAH</output>
         </div>
         <div class="slider">
             <label for="regen-efficiency">Regen Efficiency</label>
             <input type="range" id="regen-efficiency" name="regen-efficiency" min="0" max="100" value="50">
             <output for="regen-efficiency">50%</output>
-        </div>
-        <div class="slider">
-            <label for="battery-size">kWh Battery Size</label>
-            <input type="range" id="battery-size" name="battery-size" min="0" max="100" value="50">
-            <output for="battery-size">50 kWh</output>
-        </div>
-        <div class="slider">
-            <label for="total-climb">Total Climb (m)</label>
-            <input type="range" id="total-climb" name="total-climb" min="0" max="1000" value="500">
-            <output for="total-climb">500 m</output>
-        </div>
-    </div>  
+        </div>        
+    </div>
+  
+<canvas id="graph" width="400" height="300"></canvas>
+    </div>
+
+    <script src="script.js"></script> 
+ 
 </body>
 </html>
