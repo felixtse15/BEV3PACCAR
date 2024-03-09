@@ -44,11 +44,6 @@
             <output for="regen-efficiency">50%</output>
         </div>        
     </div>
-  
-<canvas id="graph" width="400" height="300"></canvas>
-    </div>
-
-    <script src="script.js"></script> 
  
 </body>
 </html>
